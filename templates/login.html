@@ -1,0 +1,63 @@
+
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login | AcxiomCRM</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <link rel="stylesheet" th:href="@{/css/login.css}">
+</head>
+<body class="login-page">
+
+<div class="login-wrapper">
+
+    <div class="login-brand">
+        <div class="brand-logo">A</div>
+        <h1>AcxiomCRM</h1>
+        <p>Customer Relationship Management</p>
+    </div>
+
+    <div class="login-card">
+        <h2>Welcome Back</h2>
+        <p class="muted">Sign in to continue to your workspace.</p>
+
+        <div class="alert alert-error" th:if="${param.error}">
+            Invalid email or password. Please try again.
+        </div>
+
+        <div class="alert alert-success" th:if="${param.logout}">
+            You have successfully logged out.
+        </div>
+
+        <form th:action="@{/login}" method="post">
+
+            <div class="form-group">
+                <label for="email">Email Address</label>
+                <input type="email" id="email" name="email"
+                       placeholder="Enter your email"
+                       autocomplete="username" required>
+            </div>
+
+            <div class="form-group">
+                <label for="password">Password</label>
+                <input type="password" id="password" name="password"
+                       placeholder="Enter your password"
+                       autocomplete="current-password" required>
+            </div>
+
+            <button type="submit" class="btn btn-primary btn-block">
+                Sign In
+            </button>
+
+        </form>
+
+        <p class="login-footer">
+            Secure access to your business workspace
+        </p>
+    </div>
+
+</div>
+
+</body>
+</html>

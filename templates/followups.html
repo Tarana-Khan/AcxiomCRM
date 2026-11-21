@@ -1,0 +1,143 @@
+
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Follow-ups | AcxiomCRM</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <script th:src="@{/js/app.js}" defer></script>
+</head>
+<body>
+<div class="app-layout">
+    <aside class="sidebar">
+        <div class="sidebar-brand"><span class="brand-logo">A</span> AcxiomCRM</div>
+        <nav class="sidebar-nav">
+            <a th:href="@{/dashboard}" class="nav-link">Dashboard</a>
+            <a th:href="@{/customers}" class="nav-link">Customers</a>
+            <a th:href="@{/leads}" class="nav-link">Leads</a>
+            <a th:href="@{/opportunities}" class="nav-link">Opportunities</a>
+            <a th:href="@{/followups}" class="nav-link active">Follow-ups</a>
+            <a th:href="@{/activities}" class="nav-link">Activities</a>
+            <a th:href="@{/reports}" class="nav-link">Reports</a>
+        </nav>
+        <form th:action="@{/logout}" method="post">
+            <button class="nav-link logout-button">Logout</button>
+        </form>
+    </aside>
+
+    <main class="main-content">
+        <header class="topbar">
+            <div>
+                <h1>Follow-ups</h1>
+                <p class="muted">Plan and track your next customer interactions.</p>
+            </div>
+            <a th:href="@{/followups/new}" class="btn btn-primary">+ Schedule Follow-up</a>
+        </header>
+
+        <section class="content-card">
+            <div class="table-responsive" th:if="${followups != null}">
+                <table>
+                    <thead>
+                    <tr>
+                        <th>Subject</th>
+                        <th>Customer</th>
+                        <th>Lead</th>
+                        <th>Assigned To</th>
+                        <th>Date</th>
+                        <th>Status</th>
+                        <th>Actions</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr th:each="f : ${followups}">
+                        <td th:text="${f.subject}"></td>
+                        <td th:text="${f.customer != null ? f.customer.customerName : '—'}"></td>
+                        <td th:text="${f.lead != null ? f.lead.leadName : '—'}"></td>
+                        <td th:text="${f.assignedTo != null ? f.assignedTo.fullName : '—'}"></td>
+                        <td th:text="${f.followUpDate}"></td>
+                        <td><span class="status-pill" th:text="${f.status}"></span></td>
+                        <td class="table-actions">
+                            <a th:href="@{/followups/edit/{id}(id=${f.id})}"
+                               class="btn btn-small btn-outline">Edit</a>
+                            <form th:action="@{/followups/delete/{id}(id=${f.id})}"
+                                  method="post"
+                                  onsubmit="return confirm('Delete this follow-up?')">
+                                <button class="btn btn-small btn-danger">Delete</button>
+                            </form>
+                        </td>
+                    </tr>
+                    <tr th:if="${#lists.isEmpty(followups)}">
+                        <td colspan="7" class="empty-state">No follow-ups found.</td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <section class="content-card form-card" th:if="${followup != null}">
+            <h2 th:text="${followup.id == null ? 'Schedule Follow-up' : 'Edit Follow-up'}">
+                Follow-up Form
+            </h2>
+
+            <form th:action="${followup.id == null ? '/followups/save' : '/followups/update/' + followup.id}"
+                  th:object="${followup}" method="post">
+
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label>Subject</label>
+                        <input th:field="*{subject}" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Follow-up Date</label>
+                        <input type="date" th:field="*{followUpDate}" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Customer</label>
+                        <select name="customerId">
+                            <option value="">No customer selected</option>
+                            <option th:each="c : ${customers}"
+                                    th:value="${c.id}"
+                                    th:selected="${followup.customer != null and followup.customer.id == c.id}"
+                                    th:text="${c.customerName}"></option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Lead</label>
+                        <select name="leadId">
+                            <option value="">No lead selected</option>
+                            <option th:each="l : ${leads}"
+                                    th:value="${l.id}"
+                                    th:selected="${followup.lead != null and followup.lead.id == l.id}"
+                                    th:text="${l.leadName}"></option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Status</label>
+                        <select th:field="*{status}" required>
+                            <option value="">Select status</option>
+                            <option th:each="s : ${statuses}"
+                                    th:value="${s}" th:text="${s}"></option>
+                        </select>
+                    </div>
+
+                    <div class="form-group full-width">
+                        <label>Description</label>
+                        <textarea th:field="*{description}" rows="4"></textarea>
+                    </div>
+                </div>
+
+                <div class="form-actions">
+                    <button class="btn btn-primary">Save Follow-up</button>
+                    <a th:href="@{/followups}" class="btn btn-outline">Cancel</a>
+                </div>
+            </form>
+        </section>
+    </main>
+</div>
+</body>
+</html>

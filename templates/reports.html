@@ -1,0 +1,166 @@
+
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reports | AcxiomCRM</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <script th:src="@{/js/app.js}" defer></script>
+</head>
+<body>
+<div class="app-layout">
+    <aside class="sidebar">
+        <div class="sidebar-brand"><span class="brand-logo">A</span> AcxiomCRM</div>
+        <nav class="sidebar-nav">
+            <a th:href="@{/dashboard}" class="nav-link">Dashboard</a>
+            <a th:href="@{/customers}" class="nav-link">Customers</a>
+            <a th:href="@{/leads}" class="nav-link">Leads</a>
+            <a th:href="@{/opportunities}" class="nav-link">Opportunities</a>
+            <a th:href="@{/followups}" class="nav-link">Follow-ups</a>
+            <a th:href="@{/activities}" class="nav-link">Activities</a>
+            <a th:href="@{/reports}" class="nav-link active">Reports</a>
+        </nav>
+        <form th:action="@{/logout}" method="post">
+            <button class="nav-link logout-button">Logout</button>
+        </form>
+    </aside>
+
+    <main class="main-content">
+        <header class="topbar">
+            <div>
+                <h1>CRM Reports</h1>
+                <p class="muted">Review business performance and CRM activity.</p>
+            </div>
+        </header>
+
+        <section class="stats-grid">
+            <div class="stat-card">
+                <span class="stat-label">Total Customers</span>
+                <h2 th:text="${totalCustomers}">0</h2>
+                <p>All customer records</p>
+            </div>
+
+            <div class="stat-card">
+                <span class="stat-label">Active Customers</span>
+                <h2 th:text="${activeCustomers}">0</h2>
+                <p>Active customer accounts</p>
+            </div>
+
+            <div class="stat-card">
+                <span class="stat-label">Total Leads</span>
+                <h2 th:text="${totalLeads}">0</h2>
+                <p>All lead records</p>
+            </div>
+
+            <div class="stat-card">
+                <span class="stat-label">Total Opportunities</span>
+                <h2 th:text="${totalOpportunities}">0</h2>
+                <p>All sales opportunities</p>
+            </div>
+
+            <div class="stat-card">
+                <span class="stat-label">Pipeline Value</span>
+                <h2>₹<span th:text="${pipelineValue}">0</span></h2>
+                <p>Total opportunity amount</p>
+            </div>
+        </section>
+
+        <section class="report-grid">
+
+            <div class="content-card">
+                <h2>Lead Status Report</h2>
+                <div class="report-row">
+                    <span>New</span>
+                    <strong th:text="${newLeads}">0</strong>
+                </div>
+                <div class="report-row">
+                    <span>Contacted</span>
+                    <strong th:text="${contactedLeads}">0</strong>
+                </div>
+                <div class="report-row">
+                    <span>Qualified</span>
+                    <strong th:text="${qualifiedLeads}">0</strong>
+                </div>
+                <div class="report-row">
+                    <span>Converted</span>
+                    <strong th:text="${convertedLeads}">0</strong>
+                </div>
+                <div class="report-row">
+                    <span>Lost</span>
+                    <strong th:text="${lostLeads}">0</strong>
+                </div>
+            </div>
+
+            <div class="content-card">
+                <h2>Opportunity Report</h2>
+                <div class="report-row">
+                    <span>Total Opportunities</span>
+                    <strong th:text="${totalOpportunities}">0</strong>
+                </div>
+                <div class="report-row">
+                    <span>Won Opportunities</span>
+                    <strong th:text="${wonOpportunities}">0</strong>
+                </div>
+                <div class="report-row">
+                    <span>Lost Opportunities</span>
+                    <strong th:text="${lostOpportunities}">0</strong>
+                </div>
+                <div class="report-row">
+                    <span>Pipeline Value</span>
+                    <strong>₹<span th:text="${pipelineValue}">0</span></strong>
+                </div>
+            </div>
+
+            <div class="content-card">
+                <h2>Follow-up Report</h2>
+                <div class="report-row">
+                    <span>Pending Follow-ups</span>
+                    <strong th:text="${pendingFollowUps}">0</strong>
+                </div>
+                <div class="report-row">
+                    <span>Completed Follow-ups</span>
+                    <strong th:text="${completedFollowUps}">0</strong>
+                </div>
+            </div>
+
+        </section>
+
+        <section class="content-card">
+            <h2>Audit History</h2>
+            <p class="muted">Recent recorded system actions.</p>
+
+            <div class="table-responsive">
+                <table>
+                    <thead>
+                    <tr>
+                        <th>User</th>
+                        <th>Action</th>
+                        <th>Entity</th>
+                        <th>Record ID</th>
+                        <th>IP Address</th>
+                        <th>Date</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr th:each="log : ${auditLogs}">
+                        <td th:text="${log.username}"></td>
+                        <td th:text="${log.action}"></td>
+                        <td th:text="${log.entityName}"></td>
+                        <td th:text="${log.recordId}"></td>
+                        <td th:text="${log.ipAddress}"></td>
+                        <td th:text="${log.createdAt}"></td>
+                    </tr>
+                    <tr th:if="${#lists.isEmpty(auditLogs)}">
+                        <td colspan="6" class="empty-state">
+                            No audit records available.
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+    </main>
+</div>
+</body>
+</html>

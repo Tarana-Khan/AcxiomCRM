@@ -1,0 +1,143 @@
+
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Activities | AcxiomCRM</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <script th:src="@{/js/app.js}" defer></script>
+</head>
+<body>
+<div class="app-layout">
+    <aside class="sidebar">
+        <div class="sidebar-brand"><span class="brand-logo">A</span> AcxiomCRM</div>
+        <nav class="sidebar-nav">
+            <a th:href="@{/dashboard}" class="nav-link">Dashboard</a>
+            <a th:href="@{/customers}" class="nav-link">Customers</a>
+            <a th:href="@{/leads}" class="nav-link">Leads</a>
+            <a th:href="@{/opportunities}" class="nav-link">Opportunities</a>
+            <a th:href="@{/followups}" class="nav-link">Follow-ups</a>
+            <a th:href="@{/activities}" class="nav-link active">Activities</a>
+            <a th:href="@{/reports}" class="nav-link">Reports</a>
+        </nav>
+        <form th:action="@{/logout}" method="post">
+            <button class="nav-link logout-button">Logout</button>
+        </form>
+    </aside>
+
+    <main class="main-content">
+        <header class="topbar">
+            <div>
+                <h1>Activities</h1>
+                <p class="muted">Keep a record of customer interactions.</p>
+            </div>
+            <a th:href="@{/activities/new}" class="btn btn-primary">+ Add Activity</a>
+        </header>
+
+        <section class="content-card">
+            <div class="table-responsive" th:if="${activities != null}">
+                <table>
+                    <thead>
+                    <tr>
+                        <th>Subject</th>
+                        <th>Type</th>
+                        <th>Customer</th>
+                        <th>Lead</th>
+                        <th>User</th>
+                        <th>Date</th>
+                        <th>Actions</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr th:each="a : ${activities}">
+                        <td th:text="${a.subject}"></td>
+                        <td><span class="status-pill" th:text="${a.type}"></span></td>
+                        <td th:text="${a.customer != null ? a.customer.customerName : '—'}"></td>
+                        <td th:text="${a.lead != null ? a.lead.leadName : '—'}"></td>
+                        <td th:text="${a.user != null ? a.user.fullName : '—'}"></td>
+                        <td th:text="${a.activityDate}"></td>
+                        <td class="table-actions">
+                            <a th:href="@{/activities/edit/{id}(id=${a.id})}"
+                               class="btn btn-small btn-outline">Edit</a>
+                            <form th:action="@{/activities/delete/{id}(id=${a.id})}"
+                                  method="post"
+                                  onsubmit="return confirm('Delete this activity?')">
+                                <button class="btn btn-small btn-danger">Delete</button>
+                            </form>
+                        </td>
+                    </tr>
+                    <tr th:if="${#lists.isEmpty(activities)}">
+                        <td colspan="7" class="empty-state">No activities recorded.</td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <section class="content-card form-card" th:if="${activity != null}">
+            <h2 th:text="${activity.id == null ? 'Add Activity' : 'Edit Activity'}">
+                Activity Form
+            </h2>
+
+            <form th:action="${activity.id == null ? '/activities/save' : '/activities/update/' + activity.id}"
+                  th:object="${activity}" method="post">
+
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label>Subject</label>
+                        <input th:field="*{subject}" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Activity Type</label>
+                        <select th:field="*{type}" required>
+                            <option value="">Select type</option>
+                            <option th:each="t : ${types}"
+                                    th:value="${t}" th:text="${t}"></option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Activity Date</label>
+                        <input type="datetime-local" th:field="*{activityDate}" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Customer</label>
+                        <select name="customerId">
+                            <option value="">No customer selected</option>
+                            <option th:each="c : ${customers}"
+                                    th:value="${c.id}"
+                                    th:selected="${activity.customer != null and activity.customer.id == c.id}"
+                                    th:text="${c.customerName}"></option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Lead</label>
+                        <select name="leadId">
+                            <option value="">No lead selected</option>
+                            <option th:each="l : ${leads}"
+                                    th:value="${l.id}"
+                                    th:selected="${activity.lead != null and activity.lead.id == l.id}"
+                                    th:text="${l.leadName}"></option>
+                        </select>
+                    </div>
+
+                    <div class="form-group full-width">
+                        <label>Description</label>
+                        <textarea th:field="*{description}" rows="4"></textarea>
+                    </div>
+                </div>
+
+                <div class="form-actions">
+                    <button class="btn btn-primary">Save Activity</button>
+                    <a th:href="@{/activities}" class="btn btn-outline">Cancel</a>
+                </div>
+            </form>
+        </section>
+    </main>
+</div>
+</body>
+</html>

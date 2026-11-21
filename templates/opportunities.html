@@ -1,0 +1,139 @@
+
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Opportunities | AcxiomCRM</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <script th:src="@{/js/app.js}" defer></script>
+</head>
+<body>
+<div class="app-layout">
+    <aside class="sidebar">
+        <div class="sidebar-brand"><span class="brand-logo">A</span> AcxiomCRM</div>
+        <nav class="sidebar-nav">
+            <a th:href="@{/dashboard}" class="nav-link">Dashboard</a>
+            <a th:href="@{/customers}" class="nav-link">Customers</a>
+            <a th:href="@{/leads}" class="nav-link">Leads</a>
+            <a th:href="@{/opportunities}" class="nav-link active">Opportunities</a>
+            <a th:href="@{/followups}" class="nav-link">Follow-ups</a>
+            <a th:href="@{/activities}" class="nav-link">Activities</a>
+            <a th:href="@{/reports}" class="nav-link">Reports</a>
+        </nav>
+        <form th:action="@{/logout}" method="post">
+            <button class="nav-link logout-button">Logout</button>
+        </form>
+    </aside>
+
+    <main class="main-content">
+        <header class="topbar">
+            <div>
+                <h1>Opportunities</h1>
+                <p class="muted">Manage deals and monitor your sales pipeline.</p>
+            </div>
+            <a th:href="@{/opportunities/new}" class="btn btn-primary">+ Add Opportunity</a>
+        </header>
+
+        <section class="content-card">
+            <div class="table-responsive" th:if="${opportunities != null}">
+                <table>
+                    <thead>
+                    <tr>
+                        <th>Opportunity</th>
+                        <th>Customer</th>
+                        <th>Amount</th>
+                        <th>Probability</th>
+                        <th>Stage</th>
+                        <th>Expected Close</th>
+                        <th>Actions</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr th:each="op : ${opportunities}">
+                        <td th:text="${op.opportunityName}"></td>
+                        <td th:text="${op.customer != null ? op.customer.customerName : 'Not assigned'}"></td>
+                        <td th:text="${op.amount != null ? '₹' + op.amount : '—'}"></td>
+                        <td th:text="${op.probability != null ? op.probability + '%' : '—'}"></td>
+                        <td><span class="status-pill" th:text="${op.stage}"></span></td>
+                        <td th:text="${op.expectedCloseDate}"></td>
+                        <td class="table-actions">
+                            <a th:href="@{/opportunities/edit/{id}(id=${op.id})}"
+                               class="btn btn-small btn-outline">Edit</a>
+                            <form th:action="@{/opportunities/delete/{id}(id=${op.id})}"
+                                  method="post"
+                                  onsubmit="return confirm('Delete this opportunity?')">
+                                <button class="btn btn-small btn-danger">Delete</button>
+                            </form>
+                        </td>
+                    </tr>
+                    <tr th:if="${#lists.isEmpty(opportunities)}">
+                        <td colspan="7" class="empty-state">No opportunities found.</td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <section class="content-card form-card" th:if="${opportunity != null}">
+            <h2 th:text="${opportunity.id == null ? 'Add Opportunity' : 'Edit Opportunity'}">
+                Opportunity Form
+            </h2>
+
+            <form th:action="${opportunity.id == null ? '/opportunities/save' : '/opportunities/update/' + opportunity.id}"
+                  th:object="${opportunity}" method="post">
+
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label>Opportunity Name</label>
+                        <input th:field="*{opportunityName}" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Customer</label>
+                        <select name="customerId">
+                            <option value="">Select customer</option>
+                            <option th:each="c : ${customers}"
+                                    th:value="${c.id}"
+                                    th:selected="${opportunity.customer != null and opportunity.customer.id == c.id}"
+                                    th:text="${c.customerName}"></option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Amount (₹)</label>
+                        <input type="number" step="0.01" min="0"
+                               th:field="*{amount}" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Probability (%)</label>
+                        <input type="number" min="0" max="100"
+                               th:field="*{probability}">
+                    </div>
+
+                    <div class="form-group">
+                        <label>Stage</label>
+                        <select th:field="*{stage}" required>
+                            <option value="">Select stage</option>
+                            <option th:each="s : ${stages}"
+                                    th:value="${s}" th:text="${s}"></option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Expected Close Date</label>
+                        <input type="date" th:field="*{expectedCloseDate}">
+                    </div>
+                </div>
+
+                <div class="form-actions">
+                    <button class="btn btn-primary">Save Opportunity</button>
+                    <a th:href="@{/opportunities}" class="btn btn-outline">Cancel</a>
+                </div>
+            </form>
+        </section>
+    </main>
+</div>
+</body>
+</html>

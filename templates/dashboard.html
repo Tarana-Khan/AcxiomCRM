@@ -1,0 +1,166 @@
+
+<!DOCTYPE html>
+
+<html lang="en"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard | AcxiomCRM</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <link rel="stylesheet" th:href="@{/css/dashboard.css}">
+    <script th:src="@{/js/app.js}" defer></script>
+    <script th:src="@{/js/dashboard.js}" defer></script>
+</head>
+<body>
+
+<div class="app-layout">
+
+    <aside class="sidebar">
+        <div class="sidebar-brand">
+            <span class="brand-logo">A</span>
+            <span>AcxiomCRM</span>
+        </div>
+
+        <nav class="sidebar-nav">
+            <p class="nav-heading">WORKSPACE</p>
+
+            <a th:href="@{/dashboard}" class="nav-link active">Dashboard</a>
+            <a th:href="@{/customers}" class="nav-link">Customers</a>
+            <a th:href="@{/leads}" class="nav-link">Leads</a>
+            <a th:href="@{/opportunities}" class="nav-link">Opportunities</a>
+            <a th:href="@{/followups}" class="nav-link">Follow-ups</a>
+            <a th:href="@{/activities}" class="nav-link">Activities</a>
+
+            <p class="nav-heading">MANAGEMENT</p>
+
+            <a th:href="@{/users}" class="nav-link"
+               sec:authorize="hasRole('ADMIN')">User Management</a>
+
+            <a th:href="@{/reports}" class="nav-link"
+               sec:authorize="hasAnyRole('ADMIN','MANAGER')">Reports</a>
+        </nav>
+
+        <form th:action="@{/logout}" method="post" class="logout-form">
+            <button type="submit" class="nav-link logout-button">
+                Logout
+            </button>
+        </form>
+    </aside>
+
+    <main class="main-content">
+
+        <header class="topbar">
+            <div>
+                <h1>Dashboard</h1>
+                <p class="muted">Welcome to your CRM workspace.</p>
+            </div>
+
+            <div class="user-info">
+                <span class="user-avatar">U</span>
+                <span sec:authentication="name">User</span>
+            </div>
+        </header>
+
+        <section class="welcome-banner">
+            <div>
+                <h2>Business Overview</h2>
+                <p>Track customers, leads, sales and follow-up activities.</p>
+            </div>
+            <a th:href="@{/customers/new}" class="btn btn-light">
+                + Add Customer
+            </a>
+        </section>
+
+        <section class="stats-grid">
+
+            <div class="stat-card">
+                <span class="stat-label">Total Customers</span>
+                <h2 th:text="${totalCustomers}">0</h2>
+                <p>Registered customers</p>
+            </div>
+
+            <div class="stat-card">
+                <span class="stat-label">Active Customers</span>
+                <h2 th:text="${activeCustomers}">0</h2>
+                <p>Currently active</p>
+            </div>
+
+            <div class="stat-card">
+                <span class="stat-label">Total Leads</span>
+                <h2 th:text="${totalLeads}">0</h2>
+                <p>All registered leads</p>
+            </div>
+
+            <div class="stat-card">
+                <span class="stat-label">New Leads</span>
+                <h2 th:text="${newLeads}">0</h2>
+                <p>Awaiting contact</p>
+            </div>
+
+            <div class="stat-card">
+                <span class="stat-label">Opportunities</span>
+                <h2 th:text="${totalOpportunities}">0</h2>
+                <p>Total sales opportunities</p>
+            </div>
+
+            <div class="stat-card">
+                <span class="stat-label">Won Opportunities</span>
+                <h2 th:text="${wonOpportunities}">0</h2>
+                <p>Successfully closed deals</p>
+            </div>
+
+            <div class="stat-card">
+                <span class="stat-label">Pipeline Value</span>
+                <h2>
+                    ₹<span th:text="${pipelineValue}">0</span>
+                </h2>
+                <p>Total opportunity value</p>
+            </div>
+
+            <div class="stat-card">
+                <span class="stat-label">Pending Follow-ups</span>
+                <h2 th:text="${pendingFollowUps}">0</h2>
+                <p>Tasks requiring attention</p>
+            </div>
+
+        </section>
+
+        <section class="content-card">
+            <div class="section-header">
+                <div>
+                    <h2>Quick Actions</h2>
+                    <p class="muted">Access common CRM operations.</p>
+                </div>
+            </div>
+
+            <div class="quick-actions">
+                <a th:href="@{/customers/new}" class="action-card">
+                    <strong>+ Add Customer</strong>
+                    <span>Create a customer record</span>
+                </a>
+
+                <a th:href="@{/leads/new}" class="action-card">
+                    <strong>+ Add Lead</strong>
+                    <span>Register a new lead</span>
+                </a>
+
+                <a th:href="@{/opportunities/new}" class="action-card">
+                    <strong>+ Add Opportunity</strong>
+                    <span>Track a potential deal</span>
+                </a>
+
+                <a th:href="@{/followups/new}" class="action-card">
+                    <strong>+ Schedule Follow-up</strong>
+                    <span>Plan your next interaction</span>
+                </a>
+            </div>
+        </section>
+
+    </main>
+</div>
+
+</body>
+</html>

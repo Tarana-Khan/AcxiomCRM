@@ -1,0 +1,138 @@
+
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Leads | AcxiomCRM</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <script th:src="@{/js/app.js}" defer></script>
+</head>
+<body>
+<div class="app-layout">
+    <aside class="sidebar">
+        <div class="sidebar-brand"><span class="brand-logo">A</span> AcxiomCRM</div>
+        <nav class="sidebar-nav">
+            <a th:href="@{/dashboard}" class="nav-link">Dashboard</a>
+            <a th:href="@{/customers}" class="nav-link">Customers</a>
+            <a th:href="@{/leads}" class="nav-link active">Leads</a>
+            <a th:href="@{/opportunities}" class="nav-link">Opportunities</a>
+            <a th:href="@{/followups}" class="nav-link">Follow-ups</a>
+            <a th:href="@{/activities}" class="nav-link">Activities</a>
+            <a th:href="@{/reports}" class="nav-link">Reports</a>
+        </nav>
+        <form th:action="@{/logout}" method="post">
+            <button class="nav-link logout-button">Logout</button>
+        </form>
+    </aside>
+
+    <main class="main-content">
+        <header class="topbar">
+            <div>
+                <h1>Leads</h1>
+                <p class="muted">Track potential customers and prospects.</p>
+            </div>
+            <a th:href="@{/leads/new}" class="btn btn-primary">+ Add Lead</a>
+        </header>
+
+        <section class="content-card">
+            <form th:action="@{/leads}" method="get" class="search-form">
+                <input name="search" th:value="${search}"
+                       placeholder="Search lead name">
+                <button class="btn btn-primary">Search</button>
+                <a th:href="@{/leads}" class="btn btn-outline">Reset</a>
+            </form>
+
+            <div class="table-responsive" th:if="${leads != null}">
+                <table>
+                    <thead>
+                    <tr>
+                        <th>Lead Name</th>
+                        <th>Email</th>
+                        <th>Phone</th>
+                        <th>Company</th>
+                        <th>Source</th>
+                        <th>Status</th>
+                        <th>Actions</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr th:each="lead : ${leads}">
+                        <td th:text="${lead.leadName}"></td>
+                        <td th:text="${lead.email}"></td>
+                        <td th:text="${lead.phone}"></td>
+                        <td th:text="${lead.companyName}"></td>
+                        <td th:text="${lead.source}"></td>
+                        <td>
+                            <span class="status-pill" th:text="${lead.status}"></span>
+                        </td>
+                        <td class="table-actions">
+                            <a th:href="@{/leads/edit/{id}(id=${lead.id})}"
+                               class="btn btn-small btn-outline">Edit</a>
+                            <form th:action="@{/leads/delete/{id}(id=${lead.id})}"
+                                  method="post"
+                                  onsubmit="return confirm('Delete this lead?')">
+                                <button class="btn btn-small btn-danger">Delete</button>
+                            </form>
+                        </td>
+                    </tr>
+                    <tr th:if="${#lists.isEmpty(leads)}">
+                        <td colspan="7" class="empty-state">No leads found.</td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <section class="content-card form-card" th:if="${lead != null}">
+            <h2 th:text="${lead.id == null ? 'Add Lead' : 'Edit Lead'}">Lead Form</h2>
+
+            <form th:action="${lead.id == null ? '/leads/save' : '/leads/update/' + lead.id}"
+                  th:object="${lead}" method="post">
+
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label>Lead Name</label>
+                        <input th:field="*{leadName}" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Email</label>
+                        <input type="email" th:field="*{email}">
+                    </div>
+
+                    <div class="form-group">
+                        <label>Phone</label>
+                        <input th:field="*{phone}">
+                    </div>
+
+                    <div class="form-group">
+                        <label>Company</label>
+                        <input th:field="*{companyName}">
+                    </div>
+
+                    <div class="form-group">
+                        <label>Lead Source</label>
+                        <input th:field="*{source}" placeholder="Website, Referral, etc.">
+                    </div>
+
+                    <div class="form-group">
+                        <label>Status</label>
+                        <select th:field="*{status}" required>
+                            <option value="">Select status</option>
+                            <option th:each="s : ${statuses}"
+                                    th:value="${s}" th:text="${s}"></option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-actions">
+                    <button class="btn btn-primary">Save Lead</button>
+                    <a th:href="@{/leads}" class="btn btn-outline">Cancel</a>
+                </div>
+            </form>
+        </section>
+    </main>
+</div>
+</body>
+</html>
